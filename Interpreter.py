@@ -95,7 +95,7 @@ def lexer(line, INSTRUCTIONS, reg, pnt, lineNum, lables=[], ram=None ):
                 tokens.append(['label', lineNum, tok.strip(':')])
             
 
-            elif tok in ['ax', 'bx', 'cx', 'dx', 'eax', 'ebx', 'ecx', 'edx', 'ip', 'esp', 'esi', 'io']: # Is refrincing reg
+            elif tok in reg.keys(): # Is refrincing reg
                 tokens.append(['reg ref', tok])
 
             elif tok in INSTRUCTIONS: # Is an instruction
