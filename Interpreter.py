@@ -22,9 +22,9 @@ def lexer(line, INSTRUCTIONS, reg, pnt, lineNum, lables=[], ram=None ):
     tokens = []
 
     for tok in line_splt:
-        tok = tok.strip('\n,')
-        tok = tok.replace('\\0', '\0')
-        tok = tok.replace('\\n', '\n')
+        tok = tok.strip('\n,') # Remove newlines in input
+        tok = tok.replace('\\0', '\0') # Allows for \0 escape
+        tok = tok.replace('\\n', '\n') # Allows for \n escape
         tok = tok.replace('\\033[', '\033[') # Allows for \033 escape
 
         if tok:
@@ -101,15 +101,14 @@ def lexer(line, INSTRUCTIONS, reg, pnt, lineNum, lables=[], ram=None ):
                 flag_float = 1
 
 
-            elif tok[-1] == ":":
+            elif tok[-1] == ":": # Creates new lable
                 tokens.append(['label', lineNum, tok.strip(':')])
             
 
             elif tok in ['ax', 'bx', 'cx', 'dx', 'eax', 'ebx', 'ecx', 'edx', 'ip', 'esp', 'esi', 'io']: # Is refrincing reg
                 tokens.append(['reg ref', tok])
 
-            elif tok in INSTRUCTIONS:
-            
+            elif tok in INSTRUCTIONS: # Is an instruction
                 tokens.append(['inst', INSTRUCTIONS[tok]])
                 
 
@@ -157,7 +156,7 @@ def Main():
 
 
     instruction_pointer = 0 # What line number we are curently on
-    lines = get_file_by_lines('Defult_Setup.asm')
+    lines = get_file_by_lines('Defult_Setup.asm') 
 
     while True:
         tokens = lexer(lines[instruction_pointer], INSTRUCTIONS, reg, pnt, instruction_pointer, lables)
@@ -171,7 +170,13 @@ def Main():
 
             else:
 
-                # Instructions are defined below
+                """
+                Add coustom instructions below ex:
+
+                case #:
+                    "INSTRUCTIONS"
+
+                """
                 match tokens[0][1]:
 
                     case 1:
