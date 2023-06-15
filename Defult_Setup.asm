@@ -1,4 +1,16 @@
 INIT:
+    ; Use % For a binary number
+    ; Use 0x for a hex number 
+    ; use @ to get the value of a register
+    ; Use *Pointer where "Pointer" is the name of your pointer
+    ; Enclose string with " or '
+    ; use ; for comments
+    ; Adding : to the end of a word creates a label
+    ; the registers are 'ax' 'bx' 'cx' 'dx' 'eax' 'ebx' 'ecx' 'edx'
+    ; the 'esp' register is used for certain instructions to write to ex: pop, bin, int 
+    ; the 'esi' register is not used
+
+
     0x03 define     0x03 ; adds alias
 
     define nop      0x00 ; Do nothing
