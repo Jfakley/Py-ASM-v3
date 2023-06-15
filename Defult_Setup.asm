@@ -43,8 +43,20 @@ INIT:
 
     define set      0x15 ; Create new register
 
+    define add      0x16 ; Add 2 numbers together
+    define sub      0x17 ; subtract 2 numbers together
+    define mul      0x18 ; multiply 2 numbers together
+    define div      0x19 ; divide 2 numbers together
+
+    define call     0x1A ; Call function
+    define ret      0x1B ; return from call
+
+    ret
+
+
+Main:
+    0x1A INIT ; Call INIT
+
     db NEXT_FILE "cov.asm"  ; Create pointer that points to the next file to run
     
-    
-
     int 0x1 *NEXT_FILE[]    ; Run the next file

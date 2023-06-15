@@ -126,7 +126,9 @@ def Main():
     pnt = [] # Pointers are stored here
     lables=[] # Labels are stored here
     stack = [] # The stack, values can be pushed to and poped from here
-    ram_val = [] 
+    In_main_func = 0 # Is in the main function
+    ram_val = [] # Not yet used 
+    ret_pointer = 0 # What line the return instruction goes to
     reg = {
             'ax':['int', 0],
             'bx':['int', 0],
@@ -150,16 +152,24 @@ def Main():
     lines = get_file_by_lines('Defult_Setup.asm') 
 
     while True:
-        tokens = lexer(lines[instruction_pointer], INSTRUCTIONS, reg, pnt, instruction_pointer, lables)
+        try:
+            tokens = lexer(lines[instruction_pointer], INSTRUCTIONS, reg, pnt, instruction_pointer, lables)
+
+        except IndexError:
+            print("\u001b[31mhlt instruction not found exited hit end of file\u001b[0m")
+            exit()
             
-        #print(tokens)
+        #print(tokens, instruction_pointer)
 
         if tokens:
 
             if tokens[0][0] == 'label':
                 lables.append([tokens[0][1], tokens[0][2]])
+                
+                if tokens[0][2].casefold() == 'main':
+                    In_main_func = 1
 
-            else:
+            elif In_main_func:
 
                 """
                 Add coustom instructions below ex:
@@ -171,6 +181,9 @@ def Main():
                 match tokens[0][1]:
 
                     case 1:
+                        if len(tokens) == 2:
+                            exit(tokens[1][1])
+
                         exit()
 
                     case 2:
@@ -202,27 +215,27 @@ def Main():
 
                     case 9: #jump if equal
                         if comp[0]:
-                            instruction_pointer = tokens[1][1] - 2
+                            instruction_pointer = tokens[1][1] - 1
 
                     case 10: #jump if NOT equal
                         if comp[1]:
-                            instruction_pointer = tokens[1][1] - 2
+                            instruction_pointer = tokens[1][1] - 1
 
                     case 11: #jump if Grater than
                         if comp[2]:
-                            instruction_pointer = tokens[1][1] - 2
+                            instruction_pointer = tokens[1][1] - 1
 
                     case 12: #jump if Less than
                         if comp[3]:
-                            instruction_pointer = tokens[1][1] - 2
+                            instruction_pointer = tokens[1][1] - 1
 
                     case 13: #jump if Grater than or equal to
                         if comp[4]:
-                            instruction_pointer = tokens[1][1] - 2
+                            instruction_pointer = tokens[1][1] - 1
 
                     case 14: #jump if Less than or equal to
                         if comp[5]:
-                            instruction_pointer = tokens[1][1] - 2
+                            instruction_pointer = tokens[1][1] - 1
 
                     case 15: # Int
                         match tokens[1][1]:
@@ -231,7 +244,9 @@ def Main():
                                 pass
 
                             case 1: #0x1 run new file
-                                instruction_pointer = 0
+                                lables = []
+                                In_main_func = 0
+                                instruction_pointer = -1
                                 lines = get_file_by_lines(tokens[2][1])
 
                             case 2: #0x2 Get len
@@ -264,9 +279,29 @@ def Main():
                         reg[tokens[1]] = ['int', 0]
                         if len(tokens) == 3:
                             reg[tokens[1]] = tokens[2]
-                            
+                    
+                    case 22: # add
+                        reg["esp"] = tokens[1][1] + tokens[2][1]
+
+                    case 23: #sub
+                        reg["esp"] = tokens[1][1] - tokens[2][1]
+
+                    case 24: # mul
+                        reg["esp"] = tokens[1][1] * tokens[2][1]
+
+                    case 25: # div
+                        reg["esp"] = tokens[1][1] / tokens[2][1]
+
+                    case 26: # call
+                        ret_pointer = instruction_pointer 
+                        instruction_pointer = tokens[1][1] - 1
+
+                    case 27: # ret
+                        instruction_pointer = ret_pointer
+
                         
-                        
+            else:
+                pass            
 
                     
 
