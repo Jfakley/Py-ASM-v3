@@ -34,12 +34,14 @@ INIT:
     define int      0x0F ; Do action depending on the number given
 
     define db       0x10 ; Create pointer
-    define rst      0x11 ; Delete pointer or instruction
+    define undefine 0x11 ; Delete pointer or instruction
 
     define binary   0x12 ; convert int to bin and store in esp
     
     define push     0x13 ; Push item onto stack
     define pop      0x14 ; pop item from stack and store in esp
+
+    define set      0x15 ; Create new register
 
     db NEXT_FILE "cov.asm"  ; Create pointer that points to the next file to run
     

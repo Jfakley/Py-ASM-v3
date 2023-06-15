@@ -59,16 +59,6 @@ def lexer(line, INSTRUCTIONS, reg, pnt, lineNum, lables=[], ram=None ):
                 else:
                     tokens.append(['???', reg[tok.strip('@')]])
 
-#            elif tok[0] == '#': # Is value in stack at defined pos
-#                if tok[1] == '$': # Def pos is in hex
-#                    tokens.append(ram[int(tok.strip('#$'), base=16)])
-#                
-#                elif tok[1] == '%': # Def pos is in bin
-#                    tokens.append(ram[int(tok.strip('#%'), base=2)])
-#           
-#                else: # Def pos is in base 10
-#                    tokens.append(ram[int(tok.strip('#'), base=10)])
-
             elif tok[0] == '*': # Is pointer
                 x = tok[1:].strip(']').split('[')
 
@@ -136,6 +126,7 @@ def Main():
     pnt = [] # Pointers are stored here
     lables=[] # Labels are stored here
     stack = [] # The stack, values can be pushed to and poped from here
+    ram_val = [] 
     reg = {
             'ax':['int', 0],
             'bx':['int', 0],
@@ -269,8 +260,13 @@ def Main():
                     case 20: # pop item from stack and store in esp
                         reg['esp'] = stack.pop()
 
-                    case 21:
-                        pass
+                    case 21: # set
+                        reg[tokens[1]] = ['int', 0]
+                        if len(tokens) == 3:
+                            reg[tokens[1]] = tokens[2]
+                            
+                        
+                        
 
                     
 
