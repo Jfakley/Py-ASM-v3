@@ -125,9 +125,10 @@ def Main():
     comp = [0,0,0,0,0,0] # Compares two values ex(==, !=, >, <,) and enters a 1 if true
     pnt = [] # Pointers are stored here
     lables=[] # Labels are stored here
+    ram_val = [] # Not yet used 
+    modules = [] # imported moduals
     stack = [] # The stack, values can be pushed to and poped from here
     In_main_func = 0 # Is in the main function
-    ram_val = [] # Not yet used 
     ret_pointer = 0 # What line the return instruction goes to
     reg = {
             'ax':['int', 0],
@@ -156,7 +157,7 @@ def Main():
             tokens = lexer(lines[instruction_pointer], INSTRUCTIONS, reg, pnt, instruction_pointer, lables)
 
         except IndexError:
-            print("\u001b[31mhlt instruction not found exited hit end of file\u001b[0m")
+            print("\u001b[31mhlt instruction not found. Hit end of file\u001b[0m")
             exit()
             
         #print(tokens, instruction_pointer)
@@ -180,13 +181,13 @@ def Main():
                 """
                 match tokens[0][1]:
 
-                    case 1:
+                    case 1: # hlt
                         if len(tokens) == 2:
                             exit(tokens[1][1])
 
                         exit()
 
-                    case 2:
+                    case 2: # print
                         for i in tokens[1:]:
                             print(i[1], end='')
 
@@ -243,14 +244,20 @@ def Main():
                             case 0: # 0x0 Nop
                                 pass
 
-                            case 1: #0x1 run new file
+                            case 1: # 0x1 run new file
                                 lables = []
                                 In_main_func = 0
                                 instruction_pointer = -1
                                 lines = get_file_by_lines(tokens[2][1])
 
-                            case 2: #0x2 Get len
+                            case 2: # 0x2 Get len
                                 reg['esp'] = len(tokens[2][1]) - 1
+
+                            case 3: # 0x3 Get user input
+                                reg['esp'] = input()
+
+                            case 4: # 0x4 Convert to int
+                                reg['esp'] = int(tokens[2][1])
 
                     case 16: # Define byte
                         x = []
@@ -262,7 +269,7 @@ def Main():
 
                         pnt.append([tokens[1], x])
 
-                    case 17:
+                    case 17: # Undifine TODO: add abilaty to remove lables and registers
                         if tokens[1] in pnt:
                             pnt.remove(tokens[1])
 
@@ -298,6 +305,32 @@ def Main():
 
                     case 27: # ret
                         instruction_pointer = ret_pointer
+
+                    case 28: # module
+                        try:
+                            modules.append([tokens[1], __import__(tokens[2][1])])
+                        except ImportError:
+                            print("Error importing")
+
+                        
+                    case 29: # run
+                        for i in modules:
+                            
+                            if i[0] == tokens[1]:
+                                try:
+                                    reg = i[1].main(reg, tokens)
+
+                                except TypeError:
+                                    try:
+                                        i[1].main()
+
+                                    except RecursionError:
+                                        print("Critical error ocored while trying to run external function")
+                                        exit()
+
+                                except:
+                                    print("Critical error ocored while trying to run external function")
+                                    exit()
 
                         
             else:

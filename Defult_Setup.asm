@@ -51,6 +51,9 @@ INIT:
     define call     0x1A ; Call function
     define ret      0x1B ; return from call
 
+    define module   0x1C ; Import a modual
+    define run      0x1D ; Run the imported modual
+
     ret
 
 
